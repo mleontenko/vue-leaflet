@@ -21,11 +21,26 @@ export default {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(mapDiv);
-    L.geoJSON(data).addTo(mapDiv);
+    //L.geoJSON(data).addTo(mapDiv);
+    L.geoJSON(data , {onEachFeature: this.onEachFeature,style: this.styleMap,}).addTo(mapDiv);
+   },
+   styleMap(feature){
+      const year = feature.properties.datelisted
+            ? parseInt(feature.properties.datelisted.slice(0, 4))
+            : 0;
+          const color = year > 2000 ? "red" : "blue";
+          return { color: color };
+    },
+    onEachFeature(feature, layer) {
+      if (feature.properties && feature.properties.name) {
+        layer.bindPopup(feature.properties.name);
+    layer.on('mouseover', () => { layer.openPopup(); });
+        layer.on('mouseout', () => { layer.closePopup(); });
+      }
    },
  },
  mounted() {
-   this.setupLeafletMap();
+   this.setupLeafletMap();   
  },
 };
 </script>
